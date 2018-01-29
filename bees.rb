@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-# This program is written by Takeda from 21Jan2018 to 25Jan2018
+# This program is written by Takeda
 # New
 
 require "curses"
@@ -131,7 +131,10 @@ begin # This block is for drawing with Curses class
 	Curses.init_screen
 	Curses.crmode
 	Curses.noecho
+
 	Curses.stdscr.nodelay = true # getch becomes non-blocking mode
+	#Curses.stdscr.timeout = 0.001 # getch becomes non-blocking mode
+	Curses.stdscr.keypad(true) # Enable UP,DOWN,RIGHT,LEFT keys
 	Curses.curs_set(0) # Make cursor invisible
 
 	ch = 0 # Save key input
@@ -148,7 +151,7 @@ begin # This block is for drawing with Curses class
 			m_curses_ch.synchronize{
 				ch = Curses.getch
 			}
-			sleep(0.1)
+			sleep(0.005)
 		end
 	end
 
@@ -173,22 +176,25 @@ begin # This block is for drawing with Curses class
 				case ch
 				when 'q' then
 					throw :quit
-				when 'k' then # go UP
+				when Curses::KEY_UP then
 					target.dec_y
-				when 'j' then # go DOWN
+					ch = 'a'
+				when Curses::KEY_DOWN then
 					target.inc_y
-				when 'l' then # go RIGHT
+					ch = 'a'
+				when Curses::KEY_RIGHT then 
 					target.inc_x
-				when 'h' then # go LEFT
+					ch = 'a'
+				when Curses::KEY_LEFT then
 					target.dec_x
+					ch = 'a'
 				end
-				ch = 'a'
 
 				# Show usage of this program
 				Curses.setpos(0, 0)
-				Curses.addstr("q       : Quit Program")
+				Curses.addstr("q          : Quit Program")
 				Curses.setpos(1, 0)
-				Curses.addstr("h,j,k,l : Move Nest")
+				Curses.addstr("Cursor Key : Move Nest")
 				Curses.refresh
 			} # End of m_curses_ch.synchronize
 			sleep(0.02)
@@ -198,23 +204,3 @@ ensure # Catch exception of Curses class
 	Curses.close_screen
 end
 					
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
